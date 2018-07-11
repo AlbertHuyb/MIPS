@@ -1,6 +1,6 @@
 
 module Control(OpCode, Funct, IRQ, 
-	PCSrc, Branch, RegWrite, RegDst, 
+	PCSrc, RegWrite, RegDst, 
 	MemRead, MemWrite, MemtoReg, 
 	ALUSrc1, ALUSrc2, ExtOp, LuOp, ALUFun, Sign);
 	input [5:0] OpCode;
@@ -17,7 +17,7 @@ module Control(OpCode, Funct, IRQ,
 	output ExtOp;
 	output LuOp;
 	output Sign;
-	output [5:0] ALUOp;
+	output [5:0] ALUFun;
 	
 	// Your code below
 	assign PCSrc = 
