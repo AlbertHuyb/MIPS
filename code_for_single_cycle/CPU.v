@@ -30,6 +30,8 @@ always @(negedge reset  or posedge clk)
  	wire IRQ;
  	wire [5:0]ALUFun;
 
+ 	assign IRQ = 0;
+
 	Control Control1(.OpCode(Instruction[31:26]), .Funct(Instruction[5:0]), .IRQ(IRQ), 
 	.PCSrc(PCSrc), .RegWrite(RegWrite), .RegDst(RegDst), 
 	.MemRead(MemRead), .MemWrite(MemWrite), .MemtoReg(MemtoReg), 
@@ -66,6 +68,8 @@ always @(negedge reset  or posedge clk)
 	wire [31:0] Branch_target;
 	assign Branch_target = outZ[0]? PC_plus_4 + {LU_out[29:0], 2'b00}: PC_plus_4;
 	
-	assign PC_next = (PCSrc == 2'b00)? Branch_target: (PCSrc == 2'b01)? Jump_target: Databus1;
+	assign PC_next = (PCSrc == 2'b00)? PC_plus_4: (PCSrc == 2'b01)? Branch_target:
+	(PCSrc == 2'b10)? Jump_target:
+	(PCSrc == 2'b11)? Databus1: (PCSrc == 2'b100)? 32'h80000004: 32'h80000008;
 
 endmodule
