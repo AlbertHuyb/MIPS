@@ -53,7 +53,7 @@ always@(*) begin
 			32'h40000010: rdata <= {24'b0,switch};
 			32'h40000014: rdata <= {20'b0,digi};
 			
-			32'h4000001C: rdata <= {24'b0, UART_RXD}:
+			32'h4000001C: rdata <= {24'b0, UART_RXD};
 			32'h40000020: rdata <= {27'b0, UART_CON};
 			
 			default: rdata <= 32'b0;
