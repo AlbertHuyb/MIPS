@@ -56,7 +56,7 @@ module Control(OpCode, Funct, IRQ,
 		(OpCode == 6'h23)? 2'b01:
 		(OpCode >= 6'h08 && OpCode <= 6'h0f) ? 2'b00:
 		(OpCode == 0 && (Funct >= 6'h20 && Funct <= 6'h27)) ? 2'b00:
-		(OpCode == 0 && (Funct == 6'h00 || Funct == 6'h02 || Funct == 6'h03 || Funct == 6'h2a)) ? 2'h00:
+		(OpCode == 0 && (Funct == 6'h00 || Funct == 6'h02 || Funct == 6'h03 || Funct == 6'h2a)) ? 2'b00:
 		2'b10;
 
 	assign ALUSrc1 = 
@@ -88,16 +88,16 @@ module Control(OpCode, Funct, IRQ,
 		(OpCode == 6'h0e || (OpCode == 6'h00 && Funct == 6'h26))? 6'b010110:
 		(OpCode == 6'h00 && Funct == 6'h27)? 6'b010001:
 		(OpCode == 6'h0c)? 6'b011000:
-		(OpCode == 6'h00 && Funct == 6'h00)? 6'h100000:
-		(OpCode == 6'h00 && Funct == 6'h02)? 6'h100001:
-		(OpCode == 6'h00 && Funct == 6'h03)? 6'h100011:
-		(OpCode == 6'h00 && Funct == 6'h2a)? 6'h110101:
-		(OpCode == 6'h0a || OpCode == 6'h0b)? 6'h110101:
-		(OpCode == 6'h04)? 6'h110011:
-		(OpCode == 6'h05)? 6'h110001:
-		(OpCode == 6'h06)? 6'h111101:
-		(OpCode == 6'h07)? 6'h111111:
-		(OpCode == 6'h01)? 6'h111011:
+		(OpCode == 6'h00 && Funct == 6'h00)? 6'b100000:
+		(OpCode == 6'h00 && Funct == 6'h02)? 6'b100001:
+		(OpCode == 6'h00 && Funct == 6'h03)? 6'b100011:
+		(OpCode == 6'h00 && Funct == 6'h2a)? 6'b110101:
+		(OpCode == 6'h0a || OpCode == 6'h0b)? 6'b110101:
+		(OpCode == 6'h04)? 6'b110011:
+		(OpCode == 6'h05)? 6'b110001:
+		(OpCode == 6'h06)? 6'b111101:
+		(OpCode == 6'h07)? 6'b111111:
+		(OpCode == 6'h01)? 6'b111011:
 		6'b000000;
 	
 endmodule
