@@ -40,8 +40,8 @@ always @(negedge reset  or posedge clk)
 	wire [31:0] Databus1, Databus2, Databus3;
 	wire [4:0] Write_register;
 
-	assign Write_register = (RegDst == 2'b00)? Instruction[20:16]: 
-							(RegDst == 2'b01)? Instruction[15:11]: 
+	assign Write_register = (RegDst == 2'b01)? Instruction[20:16]: 
+							(RegDst == 2'b00)? Instruction[15:11]: 
 							5'b11111;
 
 	RegisterFile register_file1(.reset(reset), .clk(clk), .RegWrite(RegWrite), 
@@ -60,9 +60,10 @@ always @(negedge reset  or posedge clk)
 	wire [31:0] ALU_inB;
 	wire [31:0] outZ;
 
-	assign ALU_inA = ALUSrc1? Databus1: {17'h00000, Instruction[10:6]};
-	assign ALU_inB = ALUSrc2? Databus2: LU_out;
+	assign ALU_inA = ALUSrc1? {17'h00000, Instruction[10:6]}:Databus1;
+	assign ALU_inB = ALUSrc2? LU_out: Databus2;
 
+	
 	ALU alu1(.clk(clk), .inA(ALU_inA), .inB(ALU_inB), .Sign(Sign), .ALUFun(ALUFun), .outZ(outZ));
 	
 	wire [31:0] Read_data;

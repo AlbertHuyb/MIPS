@@ -9,6 +9,8 @@ initial
 begin
 	sysclk <= 0;
 	reset <= 1;
+	#20 reset<=0;
+	#20 reset<=1;
 end
 
 always #10 sysclk <= ~sysclk;

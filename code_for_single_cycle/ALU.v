@@ -20,7 +20,7 @@ ALU4 shift(.clk(clk),.ALUFun(ALUFun[1:0]),.inA(inA),.inB(inB),
 	.result(result4));
 
 FourMux mux(.clk(clk),.control(ALUFun[5:4]),
-	.input1(result1),.input2(result3),.input3(result4),.input4(result2),
+	.input1(result1),.input2(result2),.input3(result4),.input4(result3),
 	.outZ(outZ));
 
 endmodule
@@ -32,9 +32,9 @@ input clk;
 output [31:0] outZ;
 
 assign outZ = (control == 2'b00) ? input1:
-			 (control == 2'b01) ? input2:
+			 (control == 2'b11) ? input2:
 			 (control == 2'b10) ? input3:
-			 (control == 2'b11) ? input4:
+			 (control == 2'b01) ? input4:
 			 32'b0;
 
 endmodule // FourMux
@@ -42,18 +42,21 @@ endmodule // FourMux
 module ALU1 (clk, inA, inB, Sign, ALUFun, outZ, outV, outN, result);
 input [31:0] inA,inB;
 input Sign,ALUFun,clk;
+
 output reg outZ,outV,outN;
 output reg [31:0] result;
 reg upper;
-wire [32:0] in1,in2;
+wire [32:0] in1,in2,in3;
 reg [32:0] temp;
 
 assign in1 = {inA[31],inA};
 assign in2 = ALUFun ? ~{inB[31],inB} + 1 : {inB[31],inB};
 
-always @(posedge clk)
+
+always @(*)
 begin
 	temp <= {in1 + in2};
+	result <= temp[31:0];
 	outZ <= Sign ? (temp[31:0] == 32'b0) : (temp[32:0] == 33'b0);
 	outV <= Sign ? (inA[31] && inB[31] && ~temp[31])||(~inA[31] && ~inB[31] && temp[31]) : (in1[32] + in2[32] != temp[32]);
 	outN <= Sign ? (result[31]) : 0;
@@ -68,10 +71,9 @@ reg flag;
 
 assign result = {31'b0,flag};
 
-always @(posedge clk)
+always @(*)
 begin
-	if (V)
-	begin
+
 		case(ALUFun)
 			3'b000: flag <= ~Z;
 			3'b001: flag <= Z;
@@ -80,7 +82,7 @@ begin
 			3'b101: flag <= N;
 			3'b111: flag <= ~N;
 		endcase // ALUFun
-	end	
+
 end
 
 endmodule
@@ -91,7 +93,7 @@ input [3:0] ALUFun;
 input [31:0] inA,inB;
 output reg [31:0] result;
 
-always @(posedge clk)
+always @(*)
 begin
 	case (ALUFun)
 		4'b1000: result <= inA & inB;
@@ -111,7 +113,7 @@ input [1:0] ALUFun;
 input [31:0] inA,inB;
 output reg [31:0] result;
 
-always @(posedge clk)
+always @(*)
 begin
 	case (ALUFun)
 		2'b00:

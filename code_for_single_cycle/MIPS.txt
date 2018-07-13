@@ -14,9 +14,9 @@ large:  sub $a0 $a0 $a1
 	nop
 	j gcd
 Main:   
-	addi $a0 $zero 46125
+	addi $a0 $zero 125
 	nop
-	addi $a1 $zero 84000
+	addi $a1 $zero 40
 	addi $s0 $zero 1
 	j gcd
 Inter:
