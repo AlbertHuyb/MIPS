@@ -15,8 +15,10 @@ begin
 	reset <= 1;
 	#2 reset<=0;
 	#2 reset<=1;
+	UART_RX <= 0;
+
 end
 
 always #1 sysclk <= ~sysclk;
-
+always #20 UART_RX <= ~UART_RX;
 endmodule // CPU_tb
