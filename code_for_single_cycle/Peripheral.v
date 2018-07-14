@@ -3,7 +3,7 @@
 module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX);
 input sysclk;
 input UART_RX;
-output reg UART_TX;
+output UART_TX;
 
 
 input reset,clk;
@@ -11,7 +11,6 @@ input rd,wr;
 input [31:0] addr;
 input [31:0] wdata;
 output [31:0] rdata;
-reg [31:0] rdata;
 
 output [7:0] led;
 reg [7:0] led;
@@ -43,25 +42,15 @@ UART_sender US(reset, clk16, UART_TXD, TX_EN, TX_STATUS, UART_TX);
 always @(posedge clk16)
 	TX_EN <= (TX_STATUS && UART_CON[4] && UART_CON[0])?1:0;
 
-always@(*) begin
-	if(rd) begin
-		case(addr)
-			32'h40000000: rdata <= TH;			
-			32'h40000004: rdata <= TL;			
-			32'h40000008: rdata <= {29'b0,TCON};				
-			32'h4000000C: rdata <= {24'b0,led};			
-			32'h40000010: rdata <= {24'b0,switch};
-			32'h40000014: rdata <= {20'b0,digi};
-			
-			32'h4000001C: rdata <= {24'b0, UART_RXD};
-			32'h40000020: rdata <= {27'b0, UART_CON};
-			
-			default: rdata <= 32'b0;
-		endcase
-	end
-	else
-		rdata <= 32'b0;
-end
+assign rdata = (~(rd && addr[30]))?0:
+	(addr[5:2]==0)?TH:
+	(addr[5:2]==1)?TL:
+	(addr[5:2]==2)?{29'b0,TCON}:
+	(addr[5:2]==4)?{24'b0,switch}:
+	(addr[5:2]==5)?{20'b0,digi}:
+	(addr[5:2]==7)?{24'b0, UART_RXD}:
+	(addr[5:2]==8)?{27'b0, UART_CON}:32'b0;
+
 
 always@(negedge reset or posedge clk) begin
 	if(~reset) begin

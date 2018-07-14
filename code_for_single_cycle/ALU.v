@@ -73,7 +73,6 @@ assign result = {31'b0,flag};
 
 always @(*)
 begin
-
 		case(ALUFun)
 			3'b000: flag <= ~Z;
 			3'b001: flag <= Z;
