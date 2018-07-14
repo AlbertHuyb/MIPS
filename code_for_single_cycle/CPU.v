@@ -71,32 +71,30 @@ Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead),.wr(M
 		.addr(outZ), .wdata(Databus2), .rdata(Read_data2), .led(led),.switch(switch),.digi(digi),
 		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX));
 
+InstructionMemory instruction_memory1(.Address(PC), .Instruction(Instruction));
+
+Control Control1(.OpCode(Instruction[31:26]), .Funct(Instruction[5:0]), .IRQ(IRQ), 
+				.PCSrc(PCSrc), .RegWrite(RegWrite), .RegDst(RegDst), 
+				.MemRead(MemRead), .MemWrite(MemWrite), .MemtoReg(MemtoReg), 
+				.ALUSrc1(ALUSrc1), .ALUSrc2(ALUSrc2), .ExtOp(ExtOp), .LuOp(LuOp), .ALUFun(ALUFun), .Sign(Sign));
+
+
+RegisterFile register_file1(.reset(reset), .clk(clk), .RegWrite(RegWrite), 
+		.Read_register1(Instruction[25:21]), .Read_register2(Instruction[20:16]), .Write_register(Write_register),
+		.Write_data(Databus3), .Read_data1(Databus1), .Read_data2(Databus2));
+
+	
+	
+ALU alu1(.clk(clk), .inA(ALU_inA), .inB(ALU_inB), .Sign(Sign), .ALUFun(ALUFun), .outZ(outZ));
+	
+
+DataMem data_memory1(.reset(reset), .clk(clk), .rd(MemRead), .wr(MemWrite), .addr(outZ), 
+		.wdata(Databus2), .rdata(Read_data1));
 							
 always @(negedge reset  or posedge clk)
 	if (~reset)
 		PC <= 32'h0;
 	else
 		PC <= PC_next;
-
-	InstructionMemory instruction_memory1(.Address(PC), .Instruction(Instruction));
-
-	Control Control1(.OpCode(Instruction[31:26]), .Funct(Instruction[5:0]), .IRQ(IRQ), 
-	.PCSrc(PCSrc), .RegWrite(RegWrite), .RegDst(RegDst), 
-	.MemRead(MemRead), .MemWrite(MemWrite), .MemtoReg(MemtoReg), 
-	.ALUSrc1(ALUSrc1), .ALUSrc2(ALUSrc2), .ExtOp(ExtOp), .LuOp(LuOp), .ALUFun(ALUFun), .Sign(Sign));
-
-
-	RegisterFile register_file1(.reset(reset), .clk(clk), .RegWrite(RegWrite), 
-		.Read_register1(Instruction[25:21]), .Read_register2(Instruction[20:16]), .Write_register(Write_register),
-		.Write_data(Databus3), .Read_data1(Databus1), .Read_data2(Databus2));
-
-	
-	
-	ALU alu1(.clk(clk), .inA(ALU_inA), .inB(ALU_inB), .Sign(Sign), .ALUFun(ALUFun), .outZ(outZ));
-	
-
-	DataMem data_memory1(.reset(reset), .clk(clk), .rd(MemRead), .wr(MemWrite), .addr(outZ), 
-		.wdata(Databus2), .rdata(Read_data1));
-	
 
 endmodule
