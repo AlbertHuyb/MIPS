@@ -249,7 +249,7 @@ int main()
 		{
 			string rd,rs,rt;
 			sstrm >> rd >> rs >> rt;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << reg2str( rt ) << reg2str( rd ) << "00000" << ins2Func( ins ) << ';' << endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << reg2str( rt ) << reg2str( rd ) << "00000" << ins2Func( ins ) << ';' << endl;
 		}
 		else if ( ins == "lw" || ins == "sw" )
 		{
@@ -271,28 +271,28 @@ int main()
 			stringstream temp;
 			temp << off_set;
 			temp >> offset;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << reg2str( rt ) << dec2bin( offset , 16 ) << ';' << endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << reg2str( rt ) << dec2bin( offset , 16 ) << ';' << endl;
 		}
 		else if ( ins == "lui")
 		{
 			string rt;
 			int imm;
 			sstrm >> rt >> imm;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << "00000" << reg2str(rt) << dec2bin( imm , 16 ) << ';' << endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << "00000" << reg2str(rt) << dec2bin( imm , 16 ) << ';' << endl;
 		}
 		else if ( ins == "addi" | ins == "addiu" | ins == "andi" | ins == "slti" | ins == "sltiu" | ins == "ori" )
 		{
 			string rs,rt;
 			int imm;
 			sstrm >> rt >> rs >> imm;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << reg2str( rt ) << dec2bin( imm , 16 ) << ';' << endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << reg2str( rt ) << dec2bin( imm , 16 ) << ';' << endl;
 		}
 		else if ( ins == "sll" | ins == "srl" | ins == "sra" )
 		{
 			string rt,rd;
 			int shamt;
 			sstrm >> rd >> rt >> shamt;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << "00000" << reg2str( rt ) << reg2str( rd ) << dec2bin( shamt , 5 ) << ins2Func( ins )<<  ';' <<endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << "00000" << reg2str( rt ) << reg2str( rd ) << dec2bin( shamt , 5 ) << ins2Func( ins )<<  ';' <<endl;
 		}
 		else if ( ins == "beq" | ins == "bne" )
 		{
@@ -310,7 +310,7 @@ int main()
 			stringstream temp;
 			temp << label;
 			temp >> offset;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << reg2str( rt ) << dec2bin( offset , 16 ) << ';' << endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << reg2str( rt ) << dec2bin( offset , 16 ) << ';' << endl;
 		}
 		else if ( ins == "blez" | ins == "bgtz" | ins == "bltz" )
 		{
@@ -328,7 +328,7 @@ int main()
 			stringstream temp;
 			temp << label;
 			temp >> offset;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << "00000" << dec2bin( offset , 16 ) <<  ';' <<endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << "00000" << dec2bin( offset , 16 ) <<  ';' <<endl;
 		}
 		else if ( ins == "j" | ins == "jal" )
 		{
@@ -346,23 +346,23 @@ int main()
 			stringstream temp;
 			temp << Target;
 			temp >> target;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << dec2bin( target , 26 ) << ';' <<endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << dec2bin( target , 26 ) << ';' <<endl;
 		}
 		else if ( ins == "jr" )
 		{
 			string rs;
 			sstrm >> rs;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << "00000" << "00000" << "00000" << ins2Func( ins ) << ';' <<endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << "00000" << "00000" << "00000" << ins2Func( ins ) << ';' <<endl;
 		}
 		else if ( ins == "jalr" )
 		{
 			string rs,rd;
 			sstrm >> rd >>rs;
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << "00000" << reg2str( rd ) << "00000" << ins2Func( ins ) << ';' <<endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << ins2Opcode( ins ) << reg2str( rs ) << "00000" << reg2str( rd ) << "00000" << ins2Func( ins ) << ';' <<endl;
 		}
 		else if ( ins == "nop" )
 		{
-			outFile << "ROMDATA["<<num<<"] <= 32'b" << "00000000000000000000000000000000" << ';'<<endl;
+			outFile << "8'd"<<num<<": Instruction <= 32'b" << "00000000000000000000000000000000" << ';'<<endl;
 		}
 
 

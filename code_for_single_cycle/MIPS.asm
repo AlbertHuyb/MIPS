@@ -13,13 +13,16 @@ small:  sub $a1 $a1 $a0
 large:  sub $a0 $a0 $a1
 	nop
 	j gcd
-Main:   
-	addi $a0 $zero 125
+Main:
+	addi $a0 $zero 1073741852
+	lw $a0 0($a0)
 	nop
-	addi $a1 $zero 40
+	addi $a1 $zero 1073741852
+	lw Sa1 0($a1)
 	addi $s0 $zero 1
 	j gcd
 Inter:
 Xp:
 end:	add $v0 $v0 $zero
-
+    addi $a2 $zero 1073741848
+	sw $v0 0($a2)
