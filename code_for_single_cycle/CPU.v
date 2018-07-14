@@ -6,13 +6,16 @@ output [11:0] digi;
 output UART_TX;
 
 wire clk;
+
 Clkdiv divi(sysclk,clk);
 
 reg [31:0] PC;
 wire [31:0] PC_next;
 wire [31:0] PC_plus;
 wire [31:0] PC_plus_4;
+
 assign PC_plus_4 = PC + 32'd4;
+
 wire [31:0] Instruction;
 wire [2:0] PCSrc;
 wire RegWrite;
@@ -30,13 +33,18 @@ wire IRQ;
 wire [5:0]ALUFun;
 wire [31:0] Databus1, Databus2, Databus3;
 wire [4:0] Write_register;
+
 assign Write_register = (RegDst == 2'b01)? Instruction[20:16]: 
 							(RegDst == 2'b00)? Instruction[15:11]: 
 							5'b11111;
 wire [31:0] Ext_out;
+
 assign Ext_out = {ExtOp? {16{Instruction[15]}}: 16'h0000, Instruction[15:0]};
+
 wire [31:0] LU_out;
+
 assign LU_out = LuOp? {Instruction[15:0], 16'h0000}: Ext_out;
+
 wire [31:0] ALU_inA;
 wire [31:0] ALU_inB;
 wire [31:0] outZ;
@@ -50,10 +58,11 @@ wire [31:0] Read_data2;
 
 assign Read_data = (outZ<256)? Read_data1:Read_data2;
 assign Databus3 = (MemtoReg == 2'b00)? outZ: 
-					  (MemtoReg == 2'b01)? Read_data: 
-					  PC_plus_4;
+				  (MemtoReg == 2'b01)? Read_data: 
+				   PC_plus_4;
 	
 wire [31:0] Jump_target;
+
 assign Jump_target = {PC_plus_4[31:28], Instruction[25:0], 2'b00};
 	
 wire [31:0] Branch_target;
@@ -61,12 +70,13 @@ wire [31:0] Branch_target;
 assign Branch_target = outZ[0]? PC_plus_4 + {LU_out[29:0], 2'b00}: PC_plus_4;
 	
 assign PC_next = (PCSrc == 3'b000)? PC_plus_4: 
-					 (PCSrc == 3'b001)? Branch_target:
-					 (PCSrc == 3'b010)? Jump_target:
-					 (PCSrc == 3'b011)? Databus1: 
-					 (PCSrc == 3'b100)? 32'h80000004: 
-					 (PCSrc == 3'b101)? 32'h80000008:
-					 32'h0;							
+				 (PCSrc == 3'b001)? Branch_target:
+				 (PCSrc == 3'b010)? Jump_target:
+				 (PCSrc == 3'b011)? Databus1: 
+				 (PCSrc == 3'b100)? 32'h80000004: 
+				 (PCSrc == 3'b101)? 32'h80000008:
+				 32'h0;
+				 							
 Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead),.wr(MemWrite),
 		.addr(outZ), .wdata(Databus2), .rdata(Read_data2), .led(led),.switch(switch),.digi(digi),
 		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX));

@@ -45,8 +45,7 @@ input Sign,ALUFun,clk;
 
 output reg outZ,outV,outN;
 output reg [31:0] result;
-reg upper;
-wire [32:0] in1,in2,in3;
+wire [32:0] in1,in2;
 reg [32:0] temp;
 
 assign in1 = {inA[31],inA};

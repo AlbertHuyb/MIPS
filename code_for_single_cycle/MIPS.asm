@@ -14,11 +14,14 @@ large:  sub $a0 $a0 $a1
 	nop
 	j gcd
 Main:
-	addi $a0 $zero 1073741852
-	lw $a0 0($a0)
+	#为了测试，更改取数的地址
+	#addi $a0 $zero 1073741852
+	#lw $a0 0($a0)
+	addi $a0 $zero 125
 	nop
-	addi $a1 $zero 1073741852
-	lw Sa1 0($a1)
+	#addi $a1 $zero 1073741852
+	#lw $a1 0($a1)
+	addi $a1 $zero 40
 	addi $s0 $zero 1
 	j gcd
 Inter:

@@ -1,7 +1,12 @@
 module Clkdiv(sysclk,clk);
 input sysclk;
-output clk;
+output reg clk;
 reg [8:0] count;
 
-assign clk=sysclk;
+initial
+	clk <= 0;
+//assign clk=sysclk;
+always @(posedge  sysclk)
+	clk <= ~clk;
+
 endmodule
