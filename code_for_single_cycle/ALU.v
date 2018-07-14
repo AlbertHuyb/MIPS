@@ -20,7 +20,7 @@ ALU4 shift(.clk(clk),.ALUFun(ALUFun[1:0]),.inA(inA),.inB(inB),
 	.result(result4));
 
 FourMux mux(.clk(clk),.control(ALUFun[5:4]),
-	.input1(result1),.input2(result2),.input3(result4),.input4(result3),
+	.input1(result1),.input2(result2),.input3(result3),.input4(result4),
 	.outZ(outZ));
 
 endmodule
@@ -33,8 +33,8 @@ output [31:0] outZ;
 
 assign outZ = (control == 2'b00) ? input1:
 			 (control == 2'b11) ? input2:
-			 (control == 2'b10) ? input3:
-			 (control == 2'b01) ? input4:
+			 (control == 2'b01) ? input3:
+			 (control == 2'b10) ? input4:
 			 32'b0;
 
 endmodule // FourMux
@@ -59,6 +59,9 @@ begin
 	result <= temp[31:0];
 	outZ <= Sign ? (temp[31:0] == 32'b0) : (temp[32:0] == 33'b0);
 	outV <= Sign ? (inA[31] && inB[31] && ~temp[31])||(~inA[31] && ~inB[31] && temp[31]) : (in1[32] + in2[32] != temp[32]);
+	//有符号的话，如果两个的符号位均为1，即负数加负数不能为正，
+	//无符号的话，补充的位不等于两个补充位求和的值，则表明有溢出的进位
+	//outV为1表示溢出
 	outN <= Sign ? (result[31]) : 0;
 end		
 endmodule
@@ -73,7 +76,8 @@ assign result = {31'b0,flag};
 
 always @(*)
 begin
-
+	if(~V)
+	begin
 		case(ALUFun)
 			3'b000: flag <= ~Z;
 			3'b001: flag <= Z;
@@ -82,7 +86,7 @@ begin
 			3'b101: flag <= N;
 			3'b111: flag <= ~N;
 		endcase // ALUFun
-
+	end
 end
 
 endmodule
