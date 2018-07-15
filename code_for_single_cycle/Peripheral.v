@@ -41,7 +41,7 @@ UART_sender US(reset, clk16, UART_TXD, TX_EN, TX_STATUS, UART_TX);
 
 always @(posedge clk16)
 	TX_EN <= (TX_STATUS && UART_CON[4] && UART_CON[0])?1:0;
-
+ 	
 assign rdata = (~(rd && addr[30]))?0:
 	(addr[5:2]==0)?TH:
 	(addr[5:2]==1)?TL:
@@ -77,16 +77,20 @@ always@(negedge reset or posedge clk) begin
 		if (TX_EN == 1'b1)
 			UART_CON[4] <= 1'b0;
 		
-		if(rd && addr == 32'h4000001C) 
+		if(rd && addr == 32'h4000001C) //读数据之后清零
 		begin
 			If_Read <= 1'b1;
+			//读过了
 			UART_CON[3] <= 1'b0;
 		end
 		
 		if (~rd && RX_STATUS == 1'b1 && UART_CON[1] == 1'b1 && If_Read == 1'b0) 
+		//没有在读数据，而且收好了一个数据，而且接收中断使能，而且没读过
 		begin
 			UART_CON[3] <= 1'b1;
+			//收好了数据
             UART_RXD <= RX_DATA;
+            //把数据放过去
         end
 		
         if (RX_STATUS == 1'b0)
@@ -107,7 +111,7 @@ always@(negedge reset or posedge clk) begin
                     UART_TXD <= wdata[7:0];   
                     UART_CON[4] <= 1'b1;
                 end
-				32'h40000020:UART_CON <= wdata[4:0];
+				32'h40000020: UART_CON <= wdata[4:0];
 				
 				default: ;
 			endcase
