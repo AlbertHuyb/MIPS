@@ -1,3 +1,9 @@
+/*
+Write your code for reg between module here.
+And add what you need.
+Good Luck!
+*/
+
 module IFIDReg();
 
 endmodule // IFIDReg
