@@ -1,4 +1,4 @@
-module CPU(reset, sysclk, led, switch, digi, UART_RX, UART_TX,LED1,LED2,LED3);
+module CPU(reset, sysclk, led, switch, digi, UART_RX, UART_TX,LED1,LED2,LED3,LED4);
 input reset, sysclk, UART_RX;
 input [7:0] switch;
 output [7:0] led;
@@ -9,12 +9,19 @@ wire clk;
 
 Clkdiv divi(sysclk,clk);
 
-output wire [7:0] LED1,LED2,LED3;
-wire [3:0] bcd_in1,bcd_in2;
+output wire [7:0] LED1,LED2,LED3,LED4;
+wire [3:0] bcd_in1,bcd_in2,bcd_in3,bcd_in4;
+
 BCD L1(.din(bcd_in1),.dout(LED1));
 BCD L2(.din(bcd_in2),.dout(LED2));
+BCD L3(.din(bcd_in3),.dout(LED3));
+BCD L4(.din(bcd_in4),.dout(LED4));
 
 reg [31:0] PC;
+
+assign bcd_in3 = PC[9:6];
+assign bcd_in4 = PC[5:2];
+
 wire [31:0] PC_next;
 wire [31:0] PC_plus;
 wire [31:0] PC_plus_4;
