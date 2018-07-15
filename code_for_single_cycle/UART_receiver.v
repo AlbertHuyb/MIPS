@@ -65,10 +65,15 @@ begin
 			count<=0;
 			if(num==8)
 			begin
-				state<=2'b00;
 				RX_STATUS<=1;
 				RX_DATA<=data;
+				num<=9;
+			end
+				
+			else if(num==9)
+			begin
 				num<=0;
+				state<=0;
 			end
 			
 			else

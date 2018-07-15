@@ -1,6 +1,4 @@
-`timescale 1ns/1ps
-
-module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX,rcv_data,send_data);
+module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX);
 input sysclk;
 input UART_RX;
 output UART_TX;
@@ -27,11 +25,6 @@ reg [7:0] UART_TXD;
 reg [7:0] UART_RXD;
 reg [4:0] UART_CON;
 
-//调试
-output wire [3:0] rcv_data;
-output wire [3:0] send_data;
-assign rcv_data = UART_RXD[3:0];
-assign send_data = UART_TXD[3:0];
 
 wire RX_STATUS;
 wire TX_STATUS;
@@ -91,7 +84,7 @@ always@(negedge reset or posedge clk) begin
 			UART_CON[3] <= 1'b0;
 		end
 		
-		if (~rd && RX_STATUS == 1'b1 && UART_CON[1] == 1'b1 && If_Read == 1'b0) 
+		if (RX_STATUS == 1'b1 && UART_CON[1] == 1'b1) 
 		//没有在读数据，而且收好了一个数据，而且接收中断使能，而且没读过
 		begin
 			UART_CON[3] <= 1'b1;

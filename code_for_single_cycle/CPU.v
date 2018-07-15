@@ -1,18 +1,17 @@
-module CPU(reset, sysclk, led, switch, digi, UART_RX, UART_TX,LED1,LED2,LED3);
+module CPU(reset, sysclk,led, switch, digi, UART_RX, UART_TX);
 input reset, sysclk, UART_RX;
 input [7:0] switch;
 output [7:0] led;
 output [11:0] digi;
 output UART_TX;
 
+
 wire clk;
+
 
 Clkdiv divi(sysclk,clk);
 
-output wire [7:0] LED1,LED2,LED3;
-wire [3:0] bcd_in1,bcd_in2;
-BCD L1(.din(bcd_in1),.dout(LED1));
-BCD L2(.din(bcd_in2),.dout(LED2));
+
 
 reg [31:0] PC;
 wire [31:0] PC_next;
@@ -57,7 +56,7 @@ wire [31:0] Read_data2;
 assign Read_data = (outZ<256)? Read_data1:Read_data2;
 assign Databus3 = (MemtoReg == 2'b00)? outZ: 
 					  (MemtoReg == 2'b01)? Read_data: 
-					  PC_plus_4;
+					  (MemtoReg == 2'b10)? PC_plus_4:PC;
 	
 wire [31:0] Jump_target;
 assign Jump_target = {PC_plus_4[31:28], Instruction[25:0], 2'b00};
@@ -74,20 +73,19 @@ assign PC_next = (PCSrc == 3'b000)? PC_plus_4:
 					 (PCSrc == 3'b101)? 32'h80000008:
 					 32'h0;	
 
-Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead),.wr(MemWrite),
-		.addr(outZ), .wdata(Databus2), .rdata(Read_data2), .led(led),.switch(switch),.digi(digi),
-		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX),.rcv_data(bcd_in1),.send_data(bcd_in2));
-/*
+
 Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead),.wr(MemWrite),
 		.addr(outZ), .wdata(Databus2), .rdata(Read_data2), .led(led),.switch(switch),.digi(digi),
 		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX));
-		*/
+
 							
-always @(negedge reset  or posedge clk)
+always @(negedge reset or posedge clk)
+begin
 	if (~reset)
 		PC <= 32'h0;
 	else
 		PC <= PC_next;
+end
 
 	InstructionMemory instruction_memory1(.Address(PC), .Instruction(Instruction));
 
@@ -109,5 +107,6 @@ always @(negedge reset  or posedge clk)
 	DataMem data_memory1(.reset(reset), .clk(clk), .rd(MemRead), .wr(MemWrite), .addr(outZ), 
 		.wdata(Databus2), .rdata(Read_data1));
 	
+
 
 endmodule

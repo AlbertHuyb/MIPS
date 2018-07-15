@@ -1,11 +1,10 @@
-
 module InstructionMemory(Address, Instruction);
 	input [31:0] Address;
 	output reg [31:0] Instruction;
 	
 	always @(*)
 		case (Address[9:2])
-8'd0: Instruction <= 32'b00001000000000000000000000001110;
+			8'd0: Instruction <= 32'b00001000000000000000000000001110;
 8'd1: Instruction <= 32'b00001000000000000000000000100111;
 8'd2: Instruction <= 32'b00001000000000000000000000100111;
 8'd3: Instruction <= 32'b00010000100001010000000000000011;
@@ -48,10 +47,7 @@ module InstructionMemory(Address, Instruction);
 8'd40: Instruction <= 32'b00111100000000010100000000000000;
 8'd41: Instruction <= 32'b00110100001000010000000000011000;
 8'd42: Instruction <= 32'b00000000000000010011000000100000;
-8'd43: Instruction <= 32'b10101100110000100000000000000000;
-
-
-
+8'd43: Instruction <= 32'b10101100110000100000000000000000;	
 			default: Instruction <= 32'h00000000;
 		endcase
 		

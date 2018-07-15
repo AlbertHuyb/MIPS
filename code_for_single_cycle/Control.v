@@ -38,6 +38,7 @@ module Control(OpCode, Funct, IRQ,
 		1'b1;
 
 	assign RegDst = 
+		(PCSrc == 3'd5 || PCSrc == 3'd4)? 2'b11:
 		(OpCode == 6'h00 )? 2'b00:
 		(OpCode == 6'h03 )? 2'b10:
 		(OpCode >= 6'h04 && OpCode <= 6'h10)? 2'b01:
@@ -53,6 +54,7 @@ module Control(OpCode, Funct, IRQ,
 		1'b0;
 
 	assign MemtoReg = 
+		( PCSrc == 3'd4)? 2'b11:
 		(OpCode == 6'h23)? 2'b01:
 		(OpCode >= 6'h08 && OpCode <= 6'h0f) ? 2'b00:
 		(OpCode == 0 && (Funct >= 6'h20 && Funct <= 6'h27)) ? 2'b00:
