@@ -1,12 +1,8 @@
 module Clkdiv(sysclk,clk);
 input sysclk;
-//output reg clk;
-output wire clk;
+output reg clk;
+reg [8:0] count;
 
-assign clk = sysclk;
-//reg [8:0] count;
-
-/*
 initial 
 begin
 	clk <=0;
@@ -26,5 +22,5 @@ begin
 		count<=count+1;
 	end
 end
-*/
+
 endmodule
