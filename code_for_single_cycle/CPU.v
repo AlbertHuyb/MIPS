@@ -1,4 +1,4 @@
-module CPU(reset, sysclk, led, switch, digi, UART_RX, UART_TX);
+module CPU(reset, sysclk, led, switch, digi, UART_RX, UART_TX,LED1,LED2,LED3);
 input reset, sysclk, UART_RX;
 input [7:0] switch;
 output [7:0] led;
@@ -6,7 +6,13 @@ output [11:0] digi;
 output UART_TX;
 
 wire clk;
+
 Clkdiv divi(sysclk,clk);
+
+output wire [7:0] LED1,LED2,LED3;
+wire [3:0] bcd_in1,bcd_in2;
+BCD L1(.din(bcd_in1),.dout(LED1));
+BCD L2(.din(bcd_in2),.dout(LED2));
 
 reg [31:0] PC;
 wire [31:0] PC_next;
@@ -66,11 +72,16 @@ assign PC_next = (PCSrc == 3'b000)? PC_plus_4:
 					 (PCSrc == 3'b011)? Databus1: 
 					 (PCSrc == 3'b100)? 32'h80000004: 
 					 (PCSrc == 3'b101)? 32'h80000008:
-					 32'h0;							
+					 32'h0;	
+
+Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead),.wr(MemWrite),
+		.addr(outZ), .wdata(Databus2), .rdata(Read_data2), .led(led),.switch(switch),.digi(digi),
+		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX),.rcv_data(bcd_in1),.send_data(bcd_in2));
+/*
 Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead),.wr(MemWrite),
 		.addr(outZ), .wdata(Databus2), .rdata(Read_data2), .led(led),.switch(switch),.digi(digi),
 		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX));
-
+		*/
 							
 always @(negedge reset  or posedge clk)
 	if (~reset)

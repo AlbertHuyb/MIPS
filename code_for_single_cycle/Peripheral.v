@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX);
+module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX,rcv_data,send_data);
 input sysclk;
 input UART_RX;
 output UART_TX;
@@ -26,6 +26,13 @@ assign irqout = TCON[2];
 reg [7:0] UART_TXD;
 reg [7:0] UART_RXD;
 reg [4:0] UART_CON;
+
+//调试
+output wire [3:0] rcv_data;
+output wire [3:0] send_data;
+assign rcv_data = UART_RXD[3:0];
+assign send_data = UART_TXD[3:0];
+
 wire RX_STATUS;
 wire TX_STATUS;
 wire clk16;
