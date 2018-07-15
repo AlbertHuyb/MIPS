@@ -20,7 +20,7 @@ ALU4 shift(.clk(clk),.ALUFun(ALUFun[1:0]),.inA(inA),.inB(inB),
 	.result(result4));
 
 FourMux mux(.clk(clk),.control(ALUFun[5:4]),
-	.input1(result1),.input2(result2),.input3(result4),.input4(result3),
+	.input1(result1),.input2(result2),.input3(result3),.input4(result4),
 	.outZ(outZ));
 
 endmodule
@@ -33,8 +33,8 @@ output [31:0] outZ;
 
 assign outZ = (control == 2'b00) ? input1:
 			 (control == 2'b11) ? input2:
-			 (control == 2'b10) ? input3:
-			 (control == 2'b01) ? input4:
+			 (control == 2'b01) ? input3:
+			 (control == 2'b10) ? input4:
 			 32'b0;
 
 endmodule // FourMux
