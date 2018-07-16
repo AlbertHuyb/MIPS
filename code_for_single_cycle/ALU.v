@@ -73,6 +73,8 @@ assign result = {31'b0,flag};
 
 always @(*)
 begin
+	if(~V)
+	begin
 		case(ALUFun)
 			3'b000: flag <= ~Z;
 			3'b001: flag <= Z;
@@ -81,6 +83,7 @@ begin
 			3'b101: flag <= N;
 			3'b111: flag <= ~N;
 		endcase // ALUFun
+	end
 
 end
 
