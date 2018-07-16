@@ -1,20 +1,18 @@
-module CPU(reset, sysclk,led, switch, digi, UART_RX, UART_TX);
+module CPU(reset, sysclk,led, switch, UART_RX, UART_TX,digi_out1,digi_out2,digi_out3,digi_out4);
 input reset, sysclk, UART_RX;
 input [7:0] switch;
 output [7:0] led;
-output [11:0] digi;
 output UART_TX;
-
+output [6:0] digi_out1;	//0: CG,CF,CE,CD,CC,CB,CA
+output [6:0] digi_out2;	//1: CG,CF,CE,CD,CC,CB,CA
+output [6:0] digi_out3;	//2: CG,CF,CE,CD,CC,CB,CA
+output [6:0] digi_out4;	//3: CG,CF,CE,CD,CC,CB,CA
 
 wire clk;
 
-
 Clkdiv divi(sysclk,clk);
 
-
 reg [31:0] PC;
-
-
 wire [31:0] PC_next;
 wire [31:0] PC_plus;
 wire [31:0] PC_plus_4;
@@ -38,7 +36,7 @@ wire [31:0] Databus1, Databus2, Databus3;
 wire [4:0] Write_register;
 assign Write_register = (RegDst == 2'b01)? Instruction[20:16]: 
 							(RegDst == 2'b00)? Instruction[15:11]: 
-							5'b11111;
+							(RegDst == 2'b10) ? 5'b11111:26;
 wire [31:0] Ext_out;
 assign Ext_out = {ExtOp? {16{Instruction[15]}}: 16'h0000, Instruction[15:0]};
 wire [31:0] LU_out;
@@ -70,15 +68,16 @@ assign PC_next = (PCSrc == 3'b000)? PC_plus_4:
 					 (PCSrc == 3'b001)? Branch_target:
 					 (PCSrc == 3'b010)? Jump_target:
 					 (PCSrc == 3'b011)? Databus1: 
-					 (PCSrc == 3'b100)? 32'h80000004: 
-					 (PCSrc == 3'b101)? 32'h80000008:
+					 (PCSrc == 3'b100)? 32'h00000004: 
+					 (PCSrc == 3'b101)? 32'h00000008:
 					 32'h0;	
 
-
+wire [11:0] digi;
 Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead),.wr(MemWrite),
 		.addr(outZ), .wdata(Databus2), .rdata(Read_data2), .led(led),.switch(switch),.digi(digi),
 		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX));
 
+digitube_scan  ds(digi,digi_out1,digi_out2,digi_out3,digi_out4);		
 							
 always @(negedge reset or posedge clk)
 begin

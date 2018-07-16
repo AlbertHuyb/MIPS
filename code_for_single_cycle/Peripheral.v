@@ -70,7 +70,11 @@ always@(negedge reset or posedge clk) begin
 				TL <= TH;
 				if(TCON[1]) TCON[2] <= 1'b1;		//irq is enabled
 			end
-			else TL <= TL + 1;
+			else 
+			begin
+				TL <= TL + 1;
+				TCON[2] <=0;
+			end
 		end
 		
 		

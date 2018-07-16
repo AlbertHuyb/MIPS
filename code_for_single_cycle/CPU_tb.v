@@ -4,10 +4,13 @@ module CPU_tb;
 reg sysclk,reset,UART_RX;
 reg [7:0] switch;
 wire [7:0]led;
-wire [11:0]digi;
+wire [6:0] digi_out1;	//0: CG,CF,CE,CD,CC,CB,CA
+wire [6:0] digi_out2;	//1: CG,CF,CE,CD,CC,CB,CA
+wire [6:0] digi_out3;	//2: CG,CF,CE,CD,CC,CB,CA
+wire [6:0] digi_out4;	//3: CG,CF,CE,CD,CC,CB,CA
 wire UART_TX;
 
-CPU cpu1(reset, sysclk, led, switch, digi, UART_RX, UART_TX);
+CPU cpu1(reset, sysclk, led, switch, UART_RX, UART_TX,digi_out1,digi_out2,digi_out3,digi_out4);
 
 initial 
 begin
