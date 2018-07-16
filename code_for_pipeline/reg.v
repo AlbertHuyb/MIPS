@@ -1,4 +1,4 @@
-module regIFID(clk, reset, PC_plus_4, Instruction, PC_plus_4_1, Instruction_1);
+module IFIDreg(clk, reset, PC_plus_4, Instruction, PC_plus_4_1, Instruction_1);
  	input [31:0] PC_plus_4;
  	input [31:0] Instruction;
  	output [31:0] PC_plus_4_1;
@@ -13,9 +13,9 @@ module regIFID(clk, reset, PC_plus_4, Instruction, PC_plus_4_1, Instruction_1);
 			Instruction_1 <= Instruction;
 		end
 	end
- endmodule // regIFID
+ endmodule // IFIDreg
 
-module regIDEX(PC_plus_4_1, PCSrc, RegWrite, MemRead, MemWrite, MemtoReg, 
+module IDEXreg(PC_plus_4_1, PCSrc, RegWrite, MemRead, MemWrite, MemtoReg, 
 	ALUFun, Sign, inA, inB, Write_register, 
 	PCSrc_1, RegWrite_1, MemRead_1, MemWrite_1, MemtoReg_1, 
 	ALUFun_1, Sign_1, PC_plus_4_2, inA_1, inB_1, Write_register_1);
@@ -69,9 +69,9 @@ module regIDEX(PC_plus_4_1, PCSrc, RegWrite, MemRead, MemWrite, MemtoReg,
 			Write_register_1 <= Write_register;
 		end
 	end
-endmodule // regIDEX
+endmodule // IDEXreg
 
-module regEXMEM(outZ, DatabusB, PC_plus_4_2, PCSrc_1, RegWrite_1, MemRead_1, MemWrite_1, MemtoReg_1, Write_register_1,
+module EXMEMreg(outZ, DatabusB, PC_plus_4_2, PCSrc_1, RegWrite_1, MemRead_1, MemWrite_1, MemtoReg_1, Write_register_1,
 	outZ_1, DatebusB_1, PCSrc_2, RegWrite_2, MemRead_2, MemWrite_2, MemtoReg_2, PC_plus_4_3, Write_register_2);
 	input [31:0] outZ, DatebusB;
 	input [31:0] PC_plus_4_2;
@@ -113,9 +113,9 @@ module regEXMEM(outZ, DatabusB, PC_plus_4_2, PCSrc_1, RegWrite_1, MemRead_1, Mem
 			Write_register_2 <= Write_register_1;
 		end
 	end
-endmodule // regEXMEM
+endmodule // EXMEMreg
 
-module regMEMWB(PC_plus_4_3, DatabusB_1, RegWrite_2, MemtoReg_2, Write_register_2, 
+module MEMWBreg(PC_plus_4_3, DatabusB_1, RegWrite_2, MemtoReg_2, Write_register_2, 
 	DatabusB_2, RegWrite_3, MemtoReg_3, PC_plus_4_4, Write_register_3);
 	input [31:0] PC_plus_4_3, DatabusB_1;
 	input RegWrite_2;
@@ -141,4 +141,4 @@ module regMEMWB(PC_plus_4_3, DatabusB_1, RegWrite_2, MemtoReg_2, Write_register_
 			Write_register_3 <= Write_register_2;
 		end
 	end
-endmodule // regMEMWB
+endmodule // MEMWBreg
