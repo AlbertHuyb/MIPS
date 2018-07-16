@@ -139,5 +139,6 @@ end:	add $v0 $v0 $zero
 	ori $at $at 24
 	add $a2 $zero $at
 	sw $v0 0($a2)
+	sw $zero 8($a2)
 	sw $v0 12(&t7)
-	
+end2:	j end2
