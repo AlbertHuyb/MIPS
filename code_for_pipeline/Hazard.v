@@ -1,5 +1,5 @@
-module Hazard(IDEX_memread,IFID_memwr,IDEX_jump,IDEX_regwr,IDEX_rt,IFID_rt,IFID_rs,IDEX_rd,IFID_pcsrc,
-	stall,PCWrite,IFFlush);
+
+module Hazard(IDEX_memread,IFID_memwr,IDEX_jump,IDEX_regwr,IDEX_rt,IFID_rs,IFID_rt,EXMEM_rd,IFID_pcsrc,stall,PCWrite,IFFlush);
 input IDEX_memread,IFID_memwr,IDEX_jump,IDEX_regwr;
 input [4:0] IDEX_rt,IFID_rs,IFID_rt,IDEX_rd;
 input [2:0] IFID_pcsrc;

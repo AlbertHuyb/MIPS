@@ -53,6 +53,7 @@ wire [5:0]ALUFun_ID, ALUFun_EX;
 wire [31:0] Databus1_ID, Databus1_EX, Databus1_MEM;
 wire [31:0] Databus2_ID, Databus2_EX, Databus2_MEM;
 wire [31:0] Databus3_WB;
+wire [4:0] Write_register_EX;
 wire [4:0] Write_register_MEM;
 wire [4:0] Write_register_WB;
 
@@ -60,6 +61,12 @@ assign Write_register_EX =
 						(RegDst_EX == 2'b01)? Instruction_EX[20:16]: 
 						(RegDst_EX == 2'b00)? Instruction_EX[15:11]: 
 						(RegDst_EX == 2'b10)? 5'b11111:
+						5'd26;
+
+assign Write_register_MEM = 
+						(RegDst_MEM == 2'b01)? Instruction_MEM[20:16]: 
+						(RegDst_MEM == 2'b00)? Instruction_MEM[15:11]: 
+						(RegDst_MEM == 2'b10)? 5'b11111:
 						5'd26;
 
 assign Write_register_WB = 
@@ -188,7 +195,7 @@ DataMem data_memory1(.reset(reset), .clk(clk), .rd(MemRead_MEM), .wr(MemWrite_ME
 
 regMEMWB MEMWB1(.reset(reset),.clk(clk),.PC_plus_4_MEM(PC_plus_4_MEM), .DatabusB_MEM(DatabusB_MEM), .RegWrite_MEM(RegWrite_MEM), .MemtoReg_MEM(MemtoReg_MEM), .Write_register_MEM(RegDst_MEM), 
 	.Read_Data(Read_data_MEM), .outZ(outZ_MEM),.Instruction_MEM(Instruction_MEM),
-	.DatabusB_WB(DatabusB_WB), .RegWrite_WB(RegWrite_MEM), .MemtoReg_WB(MemtoReg_WB), .PC_plus_4_WB(PC_plus_4_WB), .Write_register_WB(RegDst_WB),
+	.DatabusB_WB(DatabusB_WB), .RegWrite_WB(RegWrite_WB), .MemtoReg_WB(MemtoReg_WB), .PC_plus_4_WB(PC_plus_4_WB), .Write_register_WB(RegDst_WB),
 	.Read_Data_WB(Read_data_WB), .outZ_WB(outZ_WB),.Instruction_WB(Instruction_WB));
 	
 //Forward
