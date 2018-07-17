@@ -23,7 +23,7 @@ assign ALUctrl2 =
 //要将rt 保留到 EXMEM 才能进行判断，解决内存复制的forwarding
 assign MemWritectrl = 
 		//在最后一个模块，输入要写内存，输出要写寄存器，而且输入的东西正是从输出写的寄存器得来的
-		(EXMEM_memwr && MEMWB_regwr && EXMEM_rt == MEMWB_rd && EXMEM_aluctrl2 == 2'd00)? 1'b1:
+		(EXMEM_memwr && MEMWB_regwr && EXMEM_rt == MEMWB_rd && EXMEM_aluctrl2 == 2'b00)? 1'b1:
 		1'b0;
 
 //针对beq语句做的forward操作

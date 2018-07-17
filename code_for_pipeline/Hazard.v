@@ -11,7 +11,7 @@ output stall,PCWrite,IFFlush;
 
 //！！可能存在的问题，jump之后的清空和取址
 
-assign PCWrite = stall;
+assign PCWrite = ~stall;
 assign IFFlush = stall;
 assign stall = 
 		//后一条指令不写内存而且前一条指令要读内存，说明不是内存的复制，只能stall一个周期

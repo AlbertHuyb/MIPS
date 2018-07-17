@@ -19,6 +19,7 @@ module Control(OpCode, Funct, IRQ,
 	output Sign;
 	output [5:0] ALUFun;
 	
+	
 	// Your code below
 	assign PCSrc = 
 		IRQ ? 3'b100:
