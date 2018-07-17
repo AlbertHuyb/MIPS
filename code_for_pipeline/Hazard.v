@@ -1,7 +1,7 @@
-module Hazard(IDEX_memread,IFID_memwr,IDEX_jump,IDEX_regwr,IDEX_rt,IFID_rt,IFID_rs,EXMEM_rd,IFID_pcsrc,
+module Hazard(IDEX_memread,IFID_memwr,IDEX_jump,IDEX_regwr,IDEX_rt,IFID_rt,IFID_rs,IDEX_rd,IFID_pcsrc,
 	stall,PCWrite,IFFlush);
 input IDEX_memread,IFID_memwr,IDEX_jump,IDEX_regwr;
-input [4:0] IDEX_rt,IFID_rs,IFID_rt,EXMEM_rd;
+input [4:0] IDEX_rt,IFID_rs,IFID_rt,IDEX_rd;
 input [2:0] IFID_pcsrc;
 output stall,PCWrite,IFFlush;
 
@@ -20,7 +20,7 @@ assign stall =
 		IDEX_jump? 1'b1:
 		//前一条指令要写寄存器，后一条指令要进行分支跳转或跳寄存器但用于比较的寄存器是前一个的运算结果
 		//这里假设EX部分算出rd的mux是即时的，就是说假设IDEX_REG改变之后，rd就会相应改变，所以用这个rd来判断
-		(IDEX_regwr && (IFID_pcsrc == 3'b001 || IFID_pcsrc == 3'b011) && (IFID_rt == EXMEM_rd || IFID_rs == EXMEM_rd))? 1'b1:
+		(IDEX_regwr && (IFID_pcsrc == 3'b001 || IFID_pcsrc == 3'b011) && (IFID_rt == IDEX_rd || IFID_rs == IDEX_rd))? 1'b1:
 		1'b0;
 
 endmodule // Hazard
