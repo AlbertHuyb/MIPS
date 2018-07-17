@@ -4,7 +4,6 @@ module WriteRegister(reset, clk, RegWrite, Write_register, Write_data,);
 	input RegWrite;
 	input [4:0] Write_register;
 	input [31:0] Write_data;
-	output [31:0] Read_data1, Read_data2;
 	
 	reg [31:0] RF_data[31:1];
 	

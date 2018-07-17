@@ -137,7 +137,8 @@ Control Control1(.OpCode(Instruction_ID[31:26]), .Funct(Instruction_ID[5:0]), .I
 	.ALUSrc1(ALUSrc1_ID), .ALUSrc2(ALUSrc2_ID), .ExtOp(ExtOp_ID), .LuOp(LuOp_ID), .ALUFun(ALUFun_ID), .Sign(Sign_ID));
 
 RegisterFile register_file1(.reset(reset), .clk(clk), .RegWrite(RegWrite_WB), .Read_register1(Instruction_ID[25:21]), 
-	.Read_register2(Instruction_ID[20:16]),.Write_register(Write_register_WB), .Write_data(Databus3_WB), .Read_data1(Databus1_ID), .Read_data2(Databus2_ID));
+	.Read_register2(Instruction_ID[20:16]),.Write_register(Write_register_WB), .Write_data(Databus3_WB), 
+	.Read_data1(Databus1_ID), .Read_data2(Databus2_ID));
 
 regIDEX IDEX1(.clk(clk), .reset(reset), .Databus1(Databus1_ID), .Databus2(Databus2_ID),.PC_plus_4_ID(PC_plus_4_ID), .Instruction(Instruction_ID),
 	.PCSrc(PCSrc_ID), .RegWrite(RegWrite_ID), .MemRead(MemRead_ID), .MemWrite(MemWrite_ID), .MemtoReg(MemtoReg_ID), 
