@@ -53,8 +53,15 @@ wire [5:0]ALUFun_ID, ALUFun_EX;
 wire [31:0] Databus1_ID, Databus1_EX, Databus1_MEM;
 wire [31:0] Databus2_ID, Databus2_EX, Databus2_MEM;
 wire [31:0] Databus3_WB;
+wire [4:0] Write_register_EX;
 wire [4:0] Write_register_MEM;
 wire [4:0] Write_register_WB;
+
+assign Write_register_EX = 
+						(RegDst_EX == 2'b01)? Instruction_EX[20:16]: 
+						(RegDst_EX == 2'b00)? Instruction_EX[15:11]: 
+						(RegDst_EX == 2'b10)? 5'b11111:
+						5'd26;
 
 assign Write_register_MEM = 
 						(RegDst_MEM == 2'b01)? Instruction_MEM[20:16]: 
@@ -121,7 +128,7 @@ assign compare = (compare1 == compare2)? 1:0;
 wire [31:0] Jump_target;
 assign Jump_target = {PC_plus_4[31:28], Instruction_ID[25:0], 2'b00};
 wire [31:0] Branch_target;
-assign Branch_target =(compare==1)? PC + {LU_out_ID[29:0], 2'b00}: PC_plus_4;
+assign Branch_target =(compare==1)? PC + {LU_out_ID[29:0], 2'b00}: PC;
 wire PCWrite;
 
 assign PC_next =
@@ -188,7 +195,7 @@ DataMem data_memory1(.reset(reset), .clk(clk), .rd(MemRead_MEM), .wr(MemWrite_ME
 
 regMEMWB MEMWB1(.reset(reset),.clk(clk),.PC_plus_4_MEM(PC_plus_4_MEM), .DatabusB_MEM(DatabusB_MEM), .RegWrite_MEM(RegWrite_MEM), .MemtoReg_MEM(MemtoReg_MEM), .Write_register_MEM(RegDst_MEM), 
 	.Read_Data(Read_data_MEM), .outZ(outZ_MEM),.Instruction_MEM(Instruction_MEM),
-	.DatabusB_WB(DatabusB_WB), .RegWrite_WB(RegWrite_MEM), .MemtoReg_WB(MemtoReg_WB), .PC_plus_4_WB(PC_plus_4_WB), .Write_register_WB(RegDst_WB),
+	.DatabusB_WB(DatabusB_WB), .RegWrite_WB(RegWrite_WB), .MemtoReg_WB(MemtoReg_WB), .PC_plus_4_WB(PC_plus_4_WB), .Write_register_WB(RegDst_WB),
 	.Read_Data_WB(Read_data_WB), .outZ_WB(outZ_WB),.Instruction_WB(Instruction_WB));
 	
 //Forward
@@ -202,5 +209,5 @@ wire Ifjump;
 assign Ifjump = (Instruction_ID[31:26]==6'b000010);
 Hazard Hd1(.IDEX_memread(MemRead_EX),.IFID_memwr(MemWrite_ID),.IDEX_jump(Ifjump),.IDEX_regwr(RegWrite_EX),
 		   .IDEX_rt(Instruction_EX[20:16]),.IFID_rs(Instruction_ID[25:21]),.IFID_rt(Instruction_ID[20:16]),
-		   .EXMEM_rd(Write_register_MEM),.IFID_pcsrc(PCSrc_ID),.stall(),.PCWrite(PCWrite),.IFFlush(IFFlush));
+		   .EXMEM_rd(Write_register_EX),.IFID_pcsrc(PCSrc_ID),.stall(),.PCWrite(PCWrite),.IFFlush(IFFlush));
 endmodule
