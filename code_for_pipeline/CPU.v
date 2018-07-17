@@ -31,8 +31,8 @@ wire [3:0] bcd_in1,bcd_in2;
 
 BCD L1(.din(bcd_in1),.dout(LED1));
 BCD L2(.din(bcd_in2),.dout(LED2));
-
-reg [31:0] PC_ID,PC_WB;
+reg [31:0] PC;
+wire [31:0] PC_ID,PC_WB;
 wire [31:0] PC_next;
 wire [31:0] PC_plus_ID;
 wire [31:0] PC_plus_4_ID, PC_plus_4_EX, PC_plus_4_MEM, PC_plus_4_WB;
@@ -40,7 +40,7 @@ wire [31:0] PC_plus_4_ID, PC_plus_4_EX, PC_plus_4_MEM, PC_plus_4_WB;
 assign PC_plus_4_ID = PC_ID + 32'd4;
 assign PC_WB = PC_plus_4_WB - 32'd4;
 
-wire [31:0] Instruction_ID, Instruction_EX, Instruction_MEM;
+wire [31:0] Instruction_ID, Instruction_EX, Instruction_MEM, Instruction_WB;
 wire [2:0] PCSrc_ID, PCSrc_EX, PCSrc_MEM;
 wire RegWrite_ID, RegWrite_EX, RegWrite_MEM, RegWrite_WB;
 wire [1:0] RegDst_ID, RegDst_EX, RegDst_MEM, RegDst_WB;
@@ -136,18 +136,17 @@ Control Control1(.OpCode(Instruction_ID[31:26]), .Funct(Instruction_ID[5:0]), .I
 	.MemRead(MemRead_ID), .MemWrite(MemWrite_ID), .MemtoReg(MemtoReg_ID), 
 	.ALUSrc1(ALUSrc1_ID), .ALUSrc2(ALUSrc2_ID), .ExtOp(ExtOp_ID), .LuOp(LuOp_ID), .ALUFun(ALUFun_ID), .Sign(Sign_ID));
 
-
-ReadRegister register_file1(.reset(reset), .clk(clk), .Read_register1(Instruction_ID[25:21]), 
-	.Read_register2(Instruction_ID[20:16]),.Read_data1(Databus1_ID), .Read_data2(Databus2_ID));
+RegisterFile register_file1(.reset(reset), .clk(clk), .RegWrite(RegWrite_WB), .Read_register1(Instruction_ID[25:21]), 
+	.Read_register2(Instruction_ID[20:16]),.Write_register(Write_register_WB), .Write_data(Databus3_WB), .Read_data1(Databus1_ID), .Read_data2(Databus2_ID));
 
 regIDEX IDEX1(.Databus1(Databus1_ID), .Databus2(Databus2_ID),.PC_plus_4_ID(PC_plus_4_ID), .Instruction(Instruction_ID),
 	.PCSrc(PCSrc_ID), .RegWrite(RegWrite_ID), .MemRead(MemRead_ID), .MemWrite(MemWrite_ID), .MemtoReg(MemtoReg_ID), 
 	.ALUSrc1(ALUSrc1_ID), .ALUSrc2(ALUSrc2_ID),.ALUFun(ALUFun_ID), .Sign(Sign_ID), .Write_register(RegDst), 
-	.LU_out(LU_out_ID), .Branch_target(Branch_target_ID), .RegDst(RegDst_ID),
+	.Lu_out(LU_out_ID), .Branch_target(Branch_target_ID), .RegDst(RegDst_ID),
 	.PCSrc_EX(PCSrc_EX), .RegWrite_EX(RegWrite_EX), .MemRead_EX(MemRead_EX), .MemWrite_EX(MemWrite_EX), 
 	.MemtoReg_EX(MemtoReg_EX), .ALUFun_EX(ALUFun_EX), .Sign_EX(Sign_EX), .PC_plus_4_EX(PC_plus_4_EX), 
 	.Write_register_EX(Write_register_EX),.ALUSrc1_EX(ALUSrc1_EX), .ALUSrc2_EX(ALUSrc2_EX), .Instruction_EX(Instruction_EX),
-	.Databus1_EX(Databus1_EX), .Databus2_EX(Databus2_EX), .LU_out_EX(LU_out_EX), .Branch_target_EX(Branch_target_EX),
+	.Databus1_EX(Databus1_EX), .Databus2_EX(Databus2_EX), .Lu_out_EX(LU_out_EX), .Branch_target_EX(Branch_target_EX),
 	.RegDst_EX(RegDst_EX));
 
 //EX
@@ -156,20 +155,17 @@ ALU alu1(.clk(clk), .inA(ALU_inA), .inB(ALU_inB), .Sign(Sign_EX), .ALUFun(ALUFun
 
 regEXMEM EXMEM1(.Instruction(Instruction_EX),.outZ(outZ_EX), .Databus1(Databus1_EX), .Databus2(Databus2_EX), .PC_plus_4_EX(PC_plus_4_EX), .PCSrc_EX(PCSrc_EX), .RegWrite_EX(RegWrite_EX), 
 	.MemRead_EX(MemRead_EX), .MemWrite_EX(MemWrite_EX), .MemtoReg_EX(MemtoReg_EX), .Write_register_EX(Write_register_EX),
-	.Branch_target(Branch_target_EX),
+	.Branch_target(Branch_target_EX), .RegDst_EX(RegDst_EX),
 	.Instruction_MEM(Instruction_MEM), .outZ_MEM(outZ_MEM), .Databus1_MEM(Databus1_MEM), .Datebus2_MEM(Databus2_MEM), .PCSrc_MEM(PCSrc_MEM),.RegWrite_MEM(RegWrite_MEM), .MemRead_MEM(MemRead_MEM), 
 	.MemWrite_MEM(MemWrite_MEM), .MemtoReg_MEM(MemtoReg_MEM), .PC_plus_4_MEM(PC_plus_4_MEM), .Write_register_MEM(Write_register_MEM),
-	.Branch_target_MEM(Branch_target_MEM));
+	.Branch_target_MEM(Branch_target_MEM), .RegDst_MEM(RegDst_MEM));
 //MEM
 DataMem data_memory1(.reset(reset), .clk(clk), .rd(MemRead_MEM), .wr(MemWrite_MEM), .addr(outZ_MEM), 
 		.wdata(Databus2_MEM), .rdata(Read_data1_MEM));
 
-regMEMWB MEMWB1(.PC_plus_4_MEM(PC_plus_4_MEM), .DatabusB_MEM(DatabusB_MEM), .RegWrite_MEM(RegWrite_MEM), .MemtoReg_MEM(MemtoReg_MEM), .Write_register_MEM(Write_register_MEM), 
-	.Read_data(Read_data_MEM), .outZ(outZ_MEM),
+regMEMWB MEMWB1(.Instruction_MEM(Instruction_MEM), .PC_plus_4_MEM(PC_plus_4_MEM), .DatabusB_MEM(DatabusB_MEM), .RegWrite_MEM(RegWrite_MEM), .MemtoReg_MEM(MemtoReg_MEM), .Write_register_MEM(Write_register_MEM), 
+	.Read_data(Read_data_MEM), .outZ(outZ_MEM), .RegDst_MEM(RegDst_MEM),
 	.DatabusB_WB(DatabusB_WB), .RegWrite_WB(RegWrite_WB), .MemtoReg_WB(MemtoReg_WB), .PC_plus_4_WB(PC_plus_4_WB), .Write_register_WB(Write_register_WB),
-	.Read_data_WB(Read_data_WB), .outZ_WB(outZ_WB));
+	.Read_data_WB(Read_data_WB), .outZ_WB(outZ_WB), .RegDst_WB(RegDst_MEM), .Instruction_WB(Instruction_WB));
 //WB	
-WriteRegister Write_register1(.reset(reset), .clk(clk), .RegWrite(RegWrite_WB), 
-	.Write_register(Write_register_WB), .Write_data(Databus3_WB));
-
 endmodule
