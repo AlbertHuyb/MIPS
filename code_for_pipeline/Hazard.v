@@ -1,4 +1,5 @@
-module Hazard();
+
+module Hazard(IDEX_memread,IFID_memwr,IDEX_jump,IDEX_regwr,IDEX_rt,IFID_rs,IFID_rt,EXMEM_rd,IFID_pcsrc,stall,PCWrite,IFFlush);
 input IDEX_memread,IFID_memwr,IDEX_jump,IDEX_regwr;
 input [4:0] IDEX_rt,IFID_rs,IFID_rt,EXMEM_rd;
 input [2:0] IFID_pcsrc;
@@ -10,7 +11,7 @@ output stall,PCWrite,IFFlush;
 
 //！！可能存在的问题，jump之后的清空和取址
 
-assign PCWrite = stall;
+assign PCWrite = ~stall;
 assign IFFlush = stall;
 assign stall = 
 		//后一条指令不写内存而且前一条指令要读内存，说明不是内存的复制，只能stall一个周期
