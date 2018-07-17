@@ -15,13 +15,14 @@ todos:
 4.确认IRQ信号的正确性
 */
 
-module CPU(reset, sysclk, led, switch, digi, UART_RX, UART_TX);
+module CPU(reset, sysclk, led, switch, digi, UART_RX, UART_TX,out1,out2);
 input reset, sysclk, UART_RX;
 input [7:0] switch;
 output [7:0] led;
 output [11:0] digi;
 output UART_TX;
 
+output [6:0] out1,out2;
 wire clk;
 
 Clkdiv divi(sysclk,clk);
@@ -48,7 +49,7 @@ wire LuOp_ID;
 
 wire Sign_ID,Sign_EX;
 wire IRQ;
-assign IRQ=0;
+
 wire [5:0]ALUFun_ID, ALUFun_EX;
 wire [31:0] Databus1_ID, Databus1_EX, Databus1_MEM;
 wire [31:0] Databus2_ID, Databus2_EX, Databus2_MEM;
@@ -87,13 +88,18 @@ wire [31:0] ALU_inA;
 wire [31:0] ALU_inB;
 wire [31:0] outZ_EX,outZ_MEM,outZ_WB;
 wire [1:0] alusrc1,alusrc2;
+wire [31:0] Databus22_EX;
 
+assign Databus22_EX = 
+			     (alusrc2==2'b00)? Databus2_EX:
+				 (alusrc2==2'b10)? outZ_MEM: 
+				 outZ_WB;
+				 
 assign ALU_inA = ALUSrc1_EX? {17'h00000, Instruction_EX[10:6]}:
 				 (alusrc1==2'b00)? Databus1_EX:
 				 (alusrc1==2'b10)? outZ_MEM: outZ_WB; 
 assign ALU_inB = ALUSrc2_EX? LU_out_EX: 
-				 (alusrc2==2'b00)? Databus2_EX:
-				 (alusrc2==2'b10)? outZ_MEM: outZ_WB;
+				 Databus22_EX;
 
 wire [31:0] Read_data_MEM,Read_data_WB;
 wire [31:0] Read_data1_MEM;
@@ -128,23 +134,28 @@ assign compare = (compare1 == compare2)? 1:0;
 wire [31:0] Jump_target;
 assign Jump_target = {PC_plus_4[31:28], Instruction_ID[25:0], 2'b00};
 wire [31:0] Branch_target;
-assign Branch_target =(compare==1)? PC_plus_4_ID + {LU_out_ID[29:0], 2'b00}: PC_plus_4_ID;
+assign Branch_target =(compare==1)? PC + {LU_out_ID[29:0], 2'b00}: PC;
 wire PCWrite;
+wire IFFlush,EXFlush;
 
-assign PC_next =
-				(PCSrc_ID == 3'b000)? PC_plus_4: 
-				(PCSrc_ID == 3'b001)? Branch_target:
+assign PC_next =(PCSrc_ID == 3'b001)? Branch_target:
 				(PCSrc_ID == 3'b010)? Jump_target:
+				(EXFlush)? PC - 4:
+				(IFFlush)? PC:				
+				(PCSrc_ID == 3'b000)? PC_plus_4: 
 				(PCSrc_ID == 3'b011)? Databus1_MEM: //改
 				(PCSrc_ID == 3'b100)? 32'h00000004: 
 				(PCSrc_ID == 3'b101)? 32'h00000008:
 				32'h0;	
-wire IFFlush;
-				/*
+
+
+wire [3:0] p1,p2;
 Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead_MEM),.wr(MemWrite_MEM),
 		.addr(outZ_MEM), .wdata(Databus2_MEM), .rdata(Read_data2_MEM), .led(led),.switch(switch),.digi(digi),
-		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX));
-*/
+		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX),.p1(p1),.p2(p2));
+
+BCD B1(p1,out1);
+BCD B2(p2,out2);
 							
 always @(negedge reset  or posedge clk)
 	if (~reset)
@@ -156,6 +167,7 @@ InstructionMemory instruction_memory1(.Address(PC), .Instruction(Instruction));
 
 regIFID IFID1(.clk(clk), .reset(reset), .IFFlush(IFFlush), .PC_plus_4(PC_plus_4), .Instruction(Instruction),
 	.PC_plus_4_ID(PC_plus_4_ID), .Instruction_ID(Instruction_ID));
+	
 
 //ID
 
@@ -171,11 +183,11 @@ RegisterFile register(.reset(reset), .clk(clk), .RegWrite(RegWrite_WB), .Read_re
 
 regIDEX IDEX1(.reset(reset),.clk(clk),.Databus1(Databus1_ID), .Databus2(Databus2_ID),.PC_plus_4_ID(PC_plus_4_ID), .Instruction(Instruction_ID),
 	.PCSrc(PCSrc_ID), .RegWrite(RegWrite_ID), .MemRead(MemRead_ID), .MemWrite(MemWrite_ID), .MemtoReg(MemtoReg_ID), 
-	.ALUSrc1(ALUSrc1_ID), .ALUSrc2(ALUSrc2_ID),.ALUFun(ALUFun_ID), .Sign(Sign_ID), .Write_register(RegDst), 
+	.ALUSrc1(ALUSrc1_ID), .ALUSrc2(ALUSrc2_ID),.ALUFun(ALUFun_ID), .Sign(Sign_ID), .EXFlush(EXFlush),
 	.Lu_out(LU_out_ID), .Branch_target(Branch_target_ID), .RegDst(RegDst_ID),
 	.PCSrc_EX(PCSrc_EX), .RegWrite_EX(RegWrite_EX), .MemRead_EX(MemRead_EX), .MemWrite_EX(MemWrite_EX), 
 	.MemtoReg_EX(MemtoReg_EX), .ALUFun_EX(ALUFun_EX), .Sign_EX(Sign_EX), .PC_plus_4_EX(PC_plus_4_EX), 
-	.Write_register_EX(Write_register_EX),.ALUSrc1_EX(ALUSrc1_EX), .ALUSrc2_EX(ALUSrc2_EX), .Instruction_EX(Instruction_EX),
+	.ALUSrc1_EX(ALUSrc1_EX), .ALUSrc2_EX(ALUSrc2_EX), .Instruction_EX(Instruction_EX),
 	.Databus1_EX(Databus1_EX), .Databus2_EX(Databus2_EX), .Lu_out_EX(LU_out_EX), .Branch_target_EX(Branch_target_EX),
 	.RegDst_EX(RegDst_EX));
 
@@ -183,7 +195,7 @@ regIDEX IDEX1(.reset(reset),.clk(clk),.Databus1(Databus1_ID), .Databus2(Databus2
 	
 ALU alu1(.clk(clk), .inA(ALU_inA), .inB(ALU_inB), .Sign(Sign_EX), .ALUFun(ALUFun_EX), .outZ(outZ_EX));
 
-regEXMEM EXMEM1(.reset(reset),.clk(clk),.Instruction(Instruction_EX),.outZ(outZ_EX), .Databus1(Databus1_EX), .Databus2(Databus2_EX), .PC_plus_4_EX(PC_plus_4_EX), .PCSrc_EX(PCSrc_EX), .RegWrite_EX(RegWrite_EX), 
+regEXMEM EXMEM1(.reset(reset),.clk(clk),.Instruction(Instruction_EX),.outZ(outZ_EX), .Databus1(Databus1_EX), .Databus2(Databus22_EX), .PC_plus_4_EX(PC_plus_4_EX), .PCSrc_EX(PCSrc_EX), .RegWrite_EX(RegWrite_EX), 
 	.MemRead_EX(MemRead_EX), .MemWrite_EX(MemWrite_EX), .MemtoReg_EX(MemtoReg_EX), .Write_register_EX(RegDst_EX),
 	.Branch_target(Branch_target_EX),
 	.Instruction_MEM(Instruction_MEM), .outZ_MEM(outZ_MEM), .Databus1_MEM(Databus1_MEM), .Databus2_MEM(Databus2_MEM), .PCSrc_MEM(PCSrc_MEM),.RegWrite_MEM(RegWrite_MEM), .MemRead_MEM(MemRead_MEM), 
@@ -201,13 +213,15 @@ regMEMWB MEMWB1(.reset(reset),.clk(clk),.PC_plus_4_MEM(PC_plus_4_MEM), .DatabusB
 //Forward
 Forward Forward1(.IDEX_rs(Instruction_EX[25:21]),.IDEX_rt(Instruction_EX[20:16]),.IDEX_alusrc2(ALUSrc2_EX),.IDEX_alusrc1(ALUSrc1_EX),
 	.EXMEM_regwr(RegWrite_MEM),.MEMWB_regwr(RegWrite_WB),.EXMEM_rd(Write_register_MEM),.EXMEM_rt(),.MEMWB_rd(Write_register_WB),
-	.EXMEM_memwr(MemWrite_MEM),.EXMEM_aluctrl2(),.IFID_rs(Instruction_ID[25:21]),.IFID_rt(Instruction_ID[20:16]),
+	.EXMEM_memwr(MemWrite_MEM),.IDEX_memwr(MemWrite_EX),.EXMEM_aluctrl2(),.IFID_rs(Instruction_ID[25:21]),.IFID_rt(Instruction_ID[20:16]),
 	.ALUctrl1(alusrc1),.ALUctrl2(alusrc2),.MemWritectrl(),.IFID_pcsrc(PCSrc_ID),
 	.CMPctrl1(pcsrc1),.CMPctrl2(pcsrc2));
 
 wire Ifjump;
 assign Ifjump = (Instruction_ID[31:26]==6'b000010);
+
 Hazard Hd1(.IDEX_memread(MemRead_EX),.IFID_memwr(MemWrite_ID),.IDEX_jump(Ifjump),.IDEX_regwr(RegWrite_EX),
 		   .IDEX_rt(Instruction_EX[20:16]),.IFID_rs(Instruction_ID[25:21]),.IFID_rt(Instruction_ID[20:16]),
-		   .IDEX_rd(Write_register_EX),.IFID_pcsrc(PCSrc_ID),.stall(),.PCWrite(PCWrite),.IFFlush(IFFlush));
+		   .EXMEM_rd(Write_register_EX),.IFID_pcsrc(PCSrc_ID),.stall(),.PCWrite(PCWrite),.IFFlush(IFFlush),.EXFlush(EXFlush));
+
 endmodule

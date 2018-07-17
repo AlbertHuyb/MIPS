@@ -10,8 +10,9 @@ begin
 end
 always @(*)
 	clk<=sysclk;
-
+	
 /*
+
 always @(posedge sysclk)
 begin
 
@@ -25,6 +26,6 @@ begin
 	begin
 		count<=count+1;
 	end
-end
-*/
+end*/
+
 endmodule
