@@ -1,4 +1,4 @@
-module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX,p1,p2);
+module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX);
 input sysclk;
 input UART_RX;
 output UART_TX;
@@ -25,9 +25,6 @@ reg [7:0] UART_TXD;
 reg [7:0] UART_RXD;
 reg [4:0] UART_CON;
 
-output [3:0] p1,p2;
-assign p1=UART_RXD[3:0];
-assign p2=UART_TXD[3:0];
 
 wire RX_STATUS;
 wire TX_STATUS;

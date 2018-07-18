@@ -175,10 +175,11 @@ module regEXMEM(reset,clk,Instruction, outZ, Databus1, Databus2, PC_plus_4_EX, P
 endmodule // regEXMEM
 
 module regMEMWB(reset,clk,PC_plus_4_MEM, DatabusB_MEM, RegWrite_MEM, MemtoReg_MEM, Write_register_MEM, Instruction_MEM,
-	Read_Data, outZ,
+	Read_Data, outZ, IRQ,
 	DatabusB_WB, RegWrite_WB, MemtoReg_WB, PC_plus_4_WB, Write_register_WB,Instruction_WB,
 	Read_Data_WB, outZ_WB);
 	input reset,clk;
+	input IRQ;
 	input [31:0] PC_plus_4_MEM, DatabusB_MEM,Read_Data,outZ,Instruction_MEM;
 	input RegWrite_MEM;
 	input [1:0] MemtoReg_MEM;

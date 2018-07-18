@@ -6,8 +6,9 @@ reg [7:0] switch;
 wire [7:0]led;
 wire [11:0]digi;
 wire UART_TX;
+wire [6:0] LED1,LED2,LED3,LED4;
 
-CPU cpu1(reset, sysclk, led, switch, digi, UART_RX, UART_TX);
+CPU cpu1(reset, sysclk, led, switch, UART_RX, UART_TX,LED1,LED2,LED3,LED4);
 
 initial 
 begin

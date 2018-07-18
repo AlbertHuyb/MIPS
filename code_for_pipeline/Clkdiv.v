@@ -1,17 +1,18 @@
 module Clkdiv(sysclk,clk);
 input sysclk;
 output reg clk;
-reg [8:0] count;
+reg [9:0] count;
 
 initial 
 begin
 	clk <=0;
 	count <=0;
 end
+/*
 always @(*)
 	clk<=sysclk;
-	
-/*
+*/	
+
 
 always @(posedge sysclk)
 begin
@@ -26,6 +27,6 @@ begin
 	begin
 		count<=count+1;
 	end
-end*/
+end
 
 endmodule
