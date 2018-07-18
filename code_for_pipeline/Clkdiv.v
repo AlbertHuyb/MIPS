@@ -18,7 +18,7 @@ always @(posedge sysclk)
 begin
 
 
-	if(count==9'b111111111)
+	if(count==10'b0111111111)
 	begin
 		count<=0;
 		clk<=~clk;

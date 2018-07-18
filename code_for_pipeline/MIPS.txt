@@ -41,7 +41,7 @@ while2:  lw $t1 0($t0)
 	lui $at 16384
 	ori $t7 $at 0
 	sw $zero 8($t7)
-	addiu $t5 $zero -81
+	addiu $t5 $zero -1000
 	sw $t5 0($t7)
 	addiu $t5 $zero -1
 	sw $t5 4($t7)
@@ -123,6 +123,10 @@ Inter:	lw $t5 8($t7)
 	addi $s8 $zero 8
 	sll $s8 $s8 8
 	add $s7 $s8 $s7
+	sw $s7 0($t0)
+	addi $s8 $zero 3
+	sll $s8 $s8 8
+	addi $s7 $s8 $zero
 	sw $s7 0($t0)
 	nop
 	addi $sp $sp -8
