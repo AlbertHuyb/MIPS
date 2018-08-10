@@ -15,38 +15,19 @@ todos:
 4.纭IRQ淇″彿鐨勬纭€
 */
 
-module CPU(reset, sysclk,led, switch, UART_RX, UART_TX,digi_out1,digi_out2,digi_out3,digi_out4,LED1,LED2,LED3,LED4,show,txen,status,txstatus,tcon,another,rxstatus/*,LED22*/);
+module CPU(reset, sysclk,led, switch, UART_RX, UART_TX,digi_out1,digi_out2,digi_out3,digi_out4);
 input reset, sysclk, UART_RX;
 input [7:0] switch;
 output [7:0] led;
-output [2:0] tcon;
-output [3:0] status;
 
-//output [6:0] LED22;
+
+
 output UART_TX;
 output [6:0] digi_out1;	//0: CG,CF,CE,CD,CC,CB,CA
 output [6:0] digi_out2;	//1: CG,CF,CE,CD,CC,CB,CA
 output [6:0] digi_out3;	//2: CG,CF,CE,CD,CC,CB,CA
 output [6:0] digi_out4; //3: CG,CF,CE,CD,CC,CB,CA
-output [6:0] LED1;
-output [6:0] LED2;
-output [6:0] LED3;
-output [6:0] LED4;
-output show,txen,txstatus,another,rxstatus;
 
-wire [7:0] num1,num2,num3,num4;
-
-BCD test(.din(num1[7:4]),.dout(LED1));
-BCD test1(.din(num1[3:0]),.dout(LED2));
-BCD test2(.din(num2[7:4]),.dout(LED3));
-BCD test3(.din(num2[3:0]),.dout(LED4));
-
-/*
-assign LED2 = digi_out2;
-assign LED1 = digi_out1;
-assign LED3 = digi_out3;
-assign LED4 = digi_out4;
-*/
 wire clk;
 
 Clkdiv divi(sysclk,clk);
@@ -187,7 +168,7 @@ assign PC_next =(PCSrc_ID == 3'b100)? 32'h00000004:
 wire [11:0] digi;
 Peripheral peripheral(.reset(reset),.sysclk(sysclk),.clk(clk),.rd(MemRead_MEM),.wr(MemWrite_MEM),
 		.addr(outZ_MEM), .wdata(Databus2_MEM), .rdata(Read_data2_MEM), .led(led),.switch(switch),.digi(digi),
-		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX),.txen(txen),.another(another),.txstatus(txstatus),.tcon(tcon),.status(status));
+		.irqout(IRQ), .UART_RX(UART_RX), .UART_TX(UART_TX));
 digitube_scan ds(digi,digi_out1,digi_out2,digi_out3,digi_out4); 
 
 							
@@ -215,7 +196,7 @@ assign regwrite22 = RegWrite_WB || IRQ;
 	
 RegisterFile register(.reset(reset), .clk(clk), .RegWrite(regwrite22), .Read_register1(Instruction_ID[25:21]), 
 	.Read_register2(Instruction_ID[20:16]), .Write_register(Write_register_WB), .Write_data(Databus3_WB), 
-	.Read_data1(Databus1_ID), .Read_data2(Databus2_ID),.num1(num1),.num2(num2));
+	.Read_data1(Databus1_ID), .Read_data2(Databus2_ID));
 
 
 regIDEX IDEX1(.reset(reset),.clk(clk),.Databus1(Databus1_ID), .Databus2(Databus2_ID),.PC_plus_4_ID(PC_plus_4_ID), .Instruction(Instruction_ID),
@@ -240,7 +221,7 @@ regEXMEM EXMEM1(.reset(reset),.clk(clk),.Instruction(Instruction_EX),.outZ(outZ_
 	.Branch_target_MEM(Branch_target_MEM));
 //MEM
 DataMem data_memory1(.reset(reset), .clk(clk), .rd(MemRead_MEM), .wr(MemWrite_MEM), .addr(outZ_MEM), 
-		.wdata(Databus2_MEM), .rdata(Read_data1_MEM),.num1(num3),.num2(num4));
+		.wdata(Databus2_MEM), .rdata(Read_data1_MEM));
 
 regMEMWB MEMWB1(.reset(reset),.clk(clk),.PC_plus_4_MEM(PC_plus_4_MEM), .RegWrite_MEM(RegWrite_MEM), .MemtoReg_MEM(MemtoReg_MEM), .Write_register_MEM(RegDst_MEM), 
 	.Read_Data(Read_data_MEM), .outZ(outZ_MEM),.Instruction_MEM(Instruction_MEM), .IRQ(IRQ),

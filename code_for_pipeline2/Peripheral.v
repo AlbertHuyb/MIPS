@@ -1,15 +1,7 @@
-module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX,show,txen,txstatus,another,tcon,status);
+module Peripheral (reset,sysclk,clk,rd,wr,addr,wdata,rdata,led,switch,digi,irqout,UART_RX,UART_TX);
 input sysclk;
 input UART_RX;
 output UART_TX;
-
-output show;
-
-output [2:0] tcon;
-
-output [3:0] status;
-
-output txen,txstatus,another;
 
 
 input reset,clk;
@@ -23,21 +15,18 @@ reg [7:0] led;
 input [7:0] switch;
 output [11:0] digi;
 reg [11:0] digi;
-output irqout;
 
-assign status = digi[3:0];
 
 reg [31:0] TH,TL;
 reg [2:0] TCON;
-
+output irqout;
 assign irqout = TCON[2];
-assign tcon = TCON;
+
 
 reg [7:0] UART_TXD;
 reg [7:0] UART_RXD;
 reg [4:0] UART_CON;
 
-assign show = UART_CON[3];
 
 
 wire RX_STATUS;
@@ -46,9 +35,6 @@ wire clk16;
 reg TX_EN;
 reg If_Read;
 
-assign txen = TX_EN;
-assign txstatus = TX_STATUS;
-assign another = UART_CON[4];
 
 wire [7:0] RX_DATA;
 
